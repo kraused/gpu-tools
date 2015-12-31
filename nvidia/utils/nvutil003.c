@@ -6,12 +6,6 @@
 
 #include "common.h"
 
-struct
-{
-	char	driver[NVML_SYSTEM_DRIVER_VERSION_BUFFER_SIZE];
-	char	nvml[NVML_SYSTEM_DRIVER_VERSION_BUFFER_SIZE];
-} _versions;
-
 int main(int argc, char **argv)
 {
 	unsigned int count;
