@@ -16,7 +16,7 @@
 /* Default timer period in seconds.
  */
 #undef  GPUMOND_TIMER_DEFAULT_PERIOD_SEC
-#define GPUMOND_TIMER_DEFAULT_PERIOD_SEC	2
+#define GPUMOND_TIMER_DEFAULT_PERIOD_SEC	60
 
 /* Default maximal allowed deviation in microseconds.
  */
