@@ -42,7 +42,7 @@ const char *Nvml_Convert_EnableState(nvmlEnableState_t x)
 
 /* Wrapper around NVML library calls.
  *
- * Generated with python2 create.py --definitions
+ * Generated with python2 wrap-nvml.py --definitions.
  */
 
 void Nvml_DeviceClearAccountingPids(nvmlDevice_t a0)

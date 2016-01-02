@@ -28,7 +28,7 @@ int main(int argc, char **argv)
 		Nvml_DeviceGetAPIRestriction(device, NVML_RESTRICTED_API_SET_APPLICATION_CLOCKS, &enabled);
 		fprintf(stdout, "device %d application clock restrictions  : %s\n", i, Nvml_Convert_EnableState(enabled));
 
-		Nvml_DeviceSetAPIRestriction(device, NVML_RESTRICTED_API_SET_APPLICATION_CLOCKS, 0);
+		Nvml_DeviceSetAPIRestriction(device, NVML_RESTRICTED_API_SET_APPLICATION_CLOCKS, NVML_FEATURE_DISABLED);
 
 		Nvml_DeviceGetAPIRestriction(device, NVML_RESTRICTED_API_SET_APPLICATION_CLOCKS, &enabled);
 		fprintf(stdout, "device %d application clock restrictions  : %s\n", i, Nvml_Convert_EnableState(enabled));

@@ -85,6 +85,14 @@ for url in ["http://docs.nvidia.com/deploy/nvml-api/group__%s.html" % p for p in
 prototypes  = [functionPrototype (func, args)  for func, args in API]
 definitions = [functionDefinition(func, args) for func, args in API]
 
+sys.stdout.write("""\
+/* Wrapper around NVML library calls.
+ *
+ * Generated with python2 %s.
+ */
+
+""" % " ".join(sys.argv))
+
 if   "--prototypes"  == sys.argv[1]:
 	sys.stdout.write("\n".join(prototypes) + "\n")
 elif "--definitions" == sys.argv[1]:
