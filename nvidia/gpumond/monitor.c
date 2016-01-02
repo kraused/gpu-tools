@@ -163,29 +163,67 @@ SInt32 Gpumond_Monitor_Collect(struct Gpumond_Monitor_Data *self,
 	return 0;
 }
 
-SInt32 _Serialize_Json(struct Gpumond_Monitor_Data *self, char *buf, SInt64 len)
+SInt64 _Serialize_Json(struct Gpumond_Monitor_Data *self, char *buf, SInt64 len)
 {
 	SInt32 i, j;
+	SInt64 n;
+	/* Helper variables for the macros. Be careful.
+	 */
+	SInt64 _k, _m;
+	const char *_p;
 
-#undef  PUSH
-#define PUSH(STRING)	do { SInt64 _push_n = strlen(buf); strcpy(buf + _push_n, STRING); } while(0)
-
-#undef  COMMA
-#define COMMA		do { SInt64 _push_n = strlen(buf); buf[_push_n] = ','; } while(0)
-
-#undef  KV
-#define KV(S, X)	do { SInt64 _push_n = strlen(buf); 							\
-			     snprintf(buf + _push_n, len - _push_n, "\"" #X "\":%ld", (SInt64 )S.X); } while(0)
-
+	n = 0;
 	buf[0] = 0;
 
-	PUSH("{\"devices\": [");
+	/* Careful: None of these macros (with the obvious exception of TERMINATE)
+	 *          result in a zero-terminated string.
+	 */
+
+#undef  PUSHC
+#define PUSHC(CHAR)	do { 							\
+				if (UNLIKELY(n >= len)) {			\
+					return -n;				\
+				}						\
+				buf[n] = CHAR; 					\
+				++n;						\
+			} while(0)
+
+#undef	COMMA
+#define COMMA		PUSHC(',')
+
+#undef	TERMINATE
+#define	TERMINATE	PUSHC('\0')
+
+#undef	PUSHS
+#define	PUSHS(STR)	do {								\
+				for (_p = STR; *_p; ++_p) {				\
+					PUSHC(*_p);					\
+				}							\
+			} while(0)
+
+#undef  KV
+#define KV(S, X)	do {								\
+				_m = len - n;						\
+				_k = snprintf(buf + n, len - n,				\
+					"\"" #X "\":%ld", (SInt64 )S.X);		\
+				if (UNLIKELY(_k < 0)) {					\
+					return -1;					\
+				}							\
+				if (UNLIKELY(_k >= _m)) {				\
+					return -n;					\
+				}							\
+				n += _k;						\
+			} while(0)
+
+	PUSHC('{');
+	PUSHS("\"devices\":");
+	PUSHC('[');
 	for (i = 0; i < self->ndevices; ++i) {
-		PUSH("{");
+		PUSHC('{');
 		KV(self->devices[i], streaming_mp_clock); COMMA;
 		KV(self->devices[i], streaming_mp_clock); COMMA;
 		KV(self->devices[i], memory_clock); COMMA;
-		KV(self->devices[i], pcie_link_gen); PUSH(", ");
+		KV(self->devices[i], pcie_link_gen); COMMA;
 		KV(self->devices[i], pcie_link_width); COMMA;
 		KV(self->devices[i], clocks_throttle_reason); COMMA;
 		KV(self->devices[i], mem_total_b); COMMA;
@@ -197,52 +235,60 @@ SInt32 _Serialize_Json(struct Gpumond_Monitor_Data *self, char *buf, SInt64 len)
 		KV(self->devices[i], gpu_utilization_rate); COMMA;
 		KV(self->devices[i], mem_utilization_rate); COMMA;
 
-		PUSH("\"procs\":[");
+		PUSHS("\"procs\":");
+		PUSHC('[');
 		for (j = 0; j < self->devices[i].nprocs; ++j) {
-			PUSH("{");
+			PUSHC('{');
 			KV(self->devices[i].procs[j], pid); COMMA;
 			KV(self->devices[i].procs[j], memory_b);
-			PUSH("}");
+			PUSHC('}');
 			if ((j + 1) < self->devices[i].nprocs) {
 				COMMA;
 			}
 		}
-		PUSH("]}");
+		PUSHC(']');
+		PUSHC('}');
 		if ((i + 1) < self->ndevices) {
 			COMMA;
 		}
 	}
-	PUSH("]}");
+	PUSHC(']');
+	PUSHC('}');
 
-	return 0;
+	TERMINATE;
+
+	return n;
 }
 
 SInt32 Gpumond_Monitor_Print(struct Gpumond_Monitor_Data *self,
                              struct Gpumond_Output *output,
                              struct Gpumond_Logging *logging)
 {
-	/* Temporary.
-	 */
-	static char buf[8196];
-	SInt32 n;
+	static char buf[8192];
+	SInt64 n;
 	SInt32 err;
 
-	_Serialize_Json(self, buf, sizeof(buf));
-
-	n = strlen(buf);
-	if (UNLIKELY(n >= sizeof(buf) - 2)) {
-		GPUMOND_LOGGING_ERROR(logging, "Buffer overrun");
-		_exit(1);
+	n = _Serialize_Json(self, buf, sizeof(buf));
+	if (UNLIKELY(n < 0)) {
+		GPUMOND_LOGGING_ERROR(logging, "_Serialize_Json reported truncation (%ld)", n);
+		return -1;
+	}
+	--n;	/* _Serialize_Json() returns number of bytes written including
+		 * the trailing zero.
+		 */
+	if (UNLIKELY((n + 1) >= sizeof(buf))) {
+		GPUMOND_LOGGING_ERROR(logging, "Buffer is too small for trailing newline");
+		return -1;
 	}
 
-	buf[n++] = '\n';
-	buf[n] = 0;
+	buf[n]     = '\n';
+	buf[n + 1] = 0;
 
 	err = GPUMOND_OUTPUT_WRITE(output, buf, strlen(buf));
 	if (UNLIKELY(err)) {
 		GPUMOND_LOGGING_ERROR(logging, "Failed to write output: %d", err);
 		return err;
-	}	
+	}
 
 	return 0;
 }
