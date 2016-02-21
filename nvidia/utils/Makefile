@@ -10,7 +10,7 @@ Q = @
 
 default: all
 
-all: nvutil001.exe nvutil002.exe nvutil003.exe nvutil004.exe nvutil005.exe
+all: nvutil001.exe nvutil002.exe nvutil003.exe nvutil004.exe nvutil005.exe nvutil006.exe nvutil007.exe
 
 nvutil%.exe: nvutil%.o common.o
 	$(Q)$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
