@@ -11,6 +11,7 @@ void Nvml_Default_Return_Handler(const char *caller,
 {
 	if (UNLIKELY(NVML_SUCCESS != err)) {
 		fprintf(stderr, "%s: %s() returned %d: %s\n", caller, callee, (int )err, errstr);
+		fflush (stderr);
 		_exit(1);
 	}
 }
@@ -21,6 +22,7 @@ void Nvml_Debug_Return_Handler(const char *caller,
                                const char *errstr)
 {
 	fprintf(stderr, "%s: %s() returned %d: %s\n", caller, callee, (int )err, errstr);
+	fflush (stderr);
 	if (UNLIKELY(NVML_SUCCESS != err)) {
 		_exit(1);
 	}
