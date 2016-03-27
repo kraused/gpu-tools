@@ -21,7 +21,7 @@
 /* Default maximal allowed deviation in microseconds.
  */
 #undef  GPUMOND_DEFAULT_MAX_DEVIATION_USEC
-#define GPUMOND_DEFAULT_MAX_DEVIATION_USEC	100
+#define GPUMOND_DEFAULT_MAX_DEVIATION_USEC	10000
 
 /* Maximal number of GPU hosts/devices supported by the
  * daemon.
