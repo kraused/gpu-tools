@@ -106,6 +106,12 @@ int Gpumond_Watchman_Plugin::init(Watchman *w, int argc, char **argv)
 		WATCHMAN_ERROR("lseek() failed with error %d (%s)", errno, strerror(errno));
 	}
 
+        err = w->add_child(_proc, &_buf, _fo, _fe);
+        if (unlikely(err)) {
+                WATCHMAN_ERROR("Failed to add children to list: %d", err);
+                return err;
+        }
+
 	return 0;
 }
 
