@@ -96,7 +96,7 @@ int Gpumond_Watchman_Plugin::init(Watchman *w, int argc, char **argv)
 		return err;
 	}
 
-	err = _fo->open(_fo_path, O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR);
+	err = _fo->open(_fo_path, O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	if (unlikely(err)) {
 		return err;
 	}
