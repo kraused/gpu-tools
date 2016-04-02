@@ -12,6 +12,9 @@ License:	GPLv2
 
 Source:		%{name}-%{version}-%{checkout}.tar.gz
 
+%{?systemd_requires}
+BuildRequires:	systemd
+
 Requires:	watchman xorg-x11-drv-nvidia-libs
 BuildRequires:	watchman-devel gpu-deployment-kit
 
@@ -26,8 +29,8 @@ make
 make -C watchman
 
 %install
-make PREFIX=%{buildroot} install
-make PREFIX=%{buildroot} -C watchman install
+make PREFIX=%{buildroot} UNITDIR=%{buildroot}%{_unitdir} install
+make PREFIX=%{buildroot} UNITDIR=%{buildroot}%{_unitdir} -C watchman install
 
 %files
 %defattr(-,root,root)
@@ -35,5 +38,14 @@ make PREFIX=%{buildroot} -C watchman install
 %dir /usr/libexec/gpumond
 /usr/sbin/gpumond.exe
 /usr/libexec/gpumond/gpumond-watchman.so
-/usr/lib/systemd/system/gpumond.service
+%{_unitdir}/gpumond.service
+
+%post
+%systemd_post gpumond.service
+
+%preun
+%systemd_preun gpumond.service
+
+%postun
+%systemd_postun_with_restart gpumond.service
 

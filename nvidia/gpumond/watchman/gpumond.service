@@ -6,7 +6,7 @@ Wants=syslog.target
 
 [Service]
 Type=simple
-ExecStart=/usr/sbin/watchman.exe /usr/libexec/gpumond/gpumond-watchman.so /gpfs/direct /gpfs/direct/localhome/lhps/gpumond/gpumond-%H
+ExecStart=/usr/sbin/watchman.exe /usr/libexec/gpumond/gpumond-watchman.so /gpfs/direct /gpfs/direct/monitoring/gpumond/%H.gpumond.log
 
 [Install]
 WantedBy=multi-user.target

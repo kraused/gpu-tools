@@ -22,9 +22,9 @@ all: gpumond-watchman.so
 
 install:
 	install -m0755 -d $(PREFIX)/usr/libexec/gpumond/
-	install -m0755 -d $(PREFIX)/usr/lib/systemd/system/
+	install -m0755 -d $(UNITDIR)
 	install -m0755 gpumond-watchman.so	$(PREFIX)/usr/libexec/gpumond/gpumond-watchman.so
-	install -m0644 gpumond.service		$(PREFIX)/usr/lib/systemd/system/gpumond.service
+	install -m0644 gpumond.service		$(UNITDIR)/gpumond.service
 
 clean:
 	-rm -f *.o *.so
