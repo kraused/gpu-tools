@@ -23,8 +23,8 @@ static struct { int i; const char *s; } locations[] =
 	_(NVML_MEMORY_LOCATION_DEVICE_MEMORY),
 	_(NVML_MEMORY_LOCATION_REGISTER_FILE),
 	_(NVML_MEMORY_LOCATION_TEXTURE_MEMORY),
-	{0, NULL};
-}
+	{0, NULL}
+};
 
 int main(int argc, char **argv)
 {
