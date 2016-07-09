@@ -2,6 +2,7 @@
 Description=gpumond service
 After=local-fs.target
 After=gpfs-mount-local.service
+Requires=gpfs-mount-local.service
 Wants=syslog.target
 
 [Service]
