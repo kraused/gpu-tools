@@ -12,7 +12,7 @@
 	do {									\
 		err = FUNCTION(__VA_ARGS__); 					\
 		if (UNLIKELY(err)) { 						\
-			GPUMOND_LOGGING_ERROR(logging, Last_Nvml_Error());	\
+			GPUMOND_LOGGING_ERROR(logging, Last_Nvml_Error_Msg());	\
 		}								\
 	} while(0)								\
 
@@ -25,6 +25,7 @@ static SInt32 _Collect(struct _Gpumond_Monitor_Device_Data *self,
 	nvmlMemory_t mem;
 	nvmlPstates_t pstate;
 	nvmlUtilization_t utilization;
+	nvmlEnableState_t enabled;
 	/* Not supported on K80
 	nvmlViolationTime_t vt;
 	*/
@@ -94,6 +95,32 @@ static SInt32 _Collect(struct _Gpumond_Monitor_Device_Data *self,
 	self->throttle_duration_thermal.violation = vt.violationTime;
 	*/
 
+	ui32 = 0;
+	err = Nvml_DeviceGetRetiredPages(self->handle,
+			NVML_PAGE_RETIREMENT_CAUSE_MULTIPLE_SINGLE_BIT_ECC_ERRORS, &ui32, NULL);
+	/* We do not query the addresses so NVML_ERROR_INSUFFICIENT_SIZE is a perfectly fine
+	 * return value.
+	 */
+	if (UNLIKELY(err)) {
+		if (UNLIKELY(NVML_ERROR_INSUFFICIENT_SIZE != Last_Nvml_Error())) {
+			GPUMOND_LOGGING_ERROR(logging, Last_Nvml_Error_Msg());
+		}
+	}
+	self->retired_pages_sbe = ui32;
+
+	ui32 = 0;
+	err = Nvml_DeviceGetRetiredPages(self->handle,
+			NVML_PAGE_RETIREMENT_CAUSE_DOUBLE_BIT_ECC_ERROR, &ui32, NULL);
+	if (UNLIKELY(err)) {
+		if (UNLIKELY(NVML_ERROR_INSUFFICIENT_SIZE != Last_Nvml_Error())) {
+			GPUMOND_LOGGING_ERROR(logging, Last_Nvml_Error_Msg());
+		}
+	}
+	self->retired_pages_dbe = ui32;
+
+	NVML_CALL(Nvml_DeviceGetRetiredPagesPendingStatus, self->handle, &enabled);
+	self->retirement_is_pending = enabled;
+
 	return 0;
 }
 
@@ -108,14 +135,14 @@ SInt32 Gpumond_Monitor_Init(struct Gpumond_Monitor_Data *self,
 
 	err = Nvml_Init();
 	if (UNLIKELY(err)) {
-		GPUMOND_LOGGING_ERROR(logging, Last_Nvml_Error());
+		GPUMOND_LOGGING_ERROR(logging, Last_Nvml_Error_Msg());
 		return err;
 	}
 
 	count = 0;
 	err = Nvml_DeviceGetCount(&count);
 	if (UNLIKELY(err)) {
-		GPUMOND_LOGGING_ERROR(logging, Last_Nvml_Error());
+		GPUMOND_LOGGING_ERROR(logging, Last_Nvml_Error_Msg());
 		return err;
 	}
 
@@ -124,7 +151,7 @@ SInt32 Gpumond_Monitor_Init(struct Gpumond_Monitor_Data *self,
 	for (i = 0; i < self->ndevices; ++i) {
 		err = Nvml_DeviceGetHandleByIndex(i, &self->devices[i].handle);
 		if (UNLIKELY(err)) {
-			GPUMOND_LOGGING_ERROR(logging, Last_Nvml_Error());
+			GPUMOND_LOGGING_ERROR(logging, Last_Nvml_Error_Msg());
 			return err;
 		}
 	}
@@ -139,7 +166,7 @@ SInt32 Gpumond_Monitor_Fini(struct Gpumond_Monitor_Data *self,
 
 	err = Nvml_Shutdown();
 	if (UNLIKELY(err)) {
-		GPUMOND_LOGGING_ERROR(logging, Last_Nvml_Error());
+		GPUMOND_LOGGING_ERROR(logging, Last_Nvml_Error_Msg());
 		return err;
 	}
 
@@ -155,7 +182,7 @@ SInt32 Gpumond_Monitor_Collect(struct Gpumond_Monitor_Data *self,
 	for (i = 0; i < self->ndevices; ++i) {
 		err = _Collect(&self->devices[i], logging);
 		if (UNLIKELY(err)) {
-			GPUMOND_LOGGING_ERROR(logging, Last_Nvml_Error());
+			GPUMOND_LOGGING_ERROR(logging, "_Collect() failed");
 			return err;
 		}
 	}
@@ -234,6 +261,10 @@ SInt64 _Serialize_Json(struct Gpumond_Monitor_Data *self, char *buf, SInt64 len)
 		KV(self->devices[i], temperature); COMMA;
 		KV(self->devices[i], gpu_utilization_rate); COMMA;
 		KV(self->devices[i], mem_utilization_rate); COMMA;
+
+		KV(self->devices[i], retired_pages_sbe); COMMA;
+		KV(self->devices[i], retired_pages_dbe); COMMA;
+		KV(self->devices[i], retirement_is_pending); COMMA;
 
 		PUSHS("\"procs\":");
 		PUSHC('[');

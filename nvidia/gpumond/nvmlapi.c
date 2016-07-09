@@ -3,11 +3,17 @@
 
 #include "nvmlapi.h"
 
-static char _last_nvml_error[GPUMOND_NVML_ERROR_STRLEN];
+static SInt32	_last_nvml_error_int;
+static char 	_last_nvml_error_str[GPUMOND_NVML_ERROR_STRLEN];
 
-const char *Last_Nvml_Error()
+SInt32 Last_Nvml_Error()
 {
-	return _last_nvml_error;
+	return _last_nvml_error_int;
+}
+
+const char *Last_Nvml_Error_Msg()
+{
+	return _last_nvml_error_str;
 }
 
 static SInt32 _Nvml_Return_Handler(const char *caller,
@@ -15,12 +21,14 @@ static SInt32 _Nvml_Return_Handler(const char *caller,
                                    nvmlReturn_t err,
                                    const char *errstr)
 {
+	_last_nvml_error_int = err;
+
 	if (UNLIKELY(NVML_SUCCESS != err)) {
-		snprintf(_last_nvml_error, GPUMOND_NVML_ERROR_STRLEN, 
+		snprintf(_last_nvml_error_str, GPUMOND_NVML_ERROR_STRLEN,
 		         "%s: %s() returned %d: %s", caller, callee, (SInt32 )err, errstr);
 		return -1;
 	} else {
-		_last_nvml_error[0] = 0;
+		_last_nvml_error_str[0] = 0;
 	}
 
 	return 0;

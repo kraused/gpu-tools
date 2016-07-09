@@ -9,7 +9,8 @@
 
 /* Not thread safe or reentrant but good enough for our purpose.
  */
-const char *Last_Nvml_Error();
+SInt32 Last_Nvml_Error();
+const char *Last_Nvml_Error_Msg();
 
 /* Wrapper around NVML library calls.
  *

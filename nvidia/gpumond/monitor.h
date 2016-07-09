@@ -53,6 +53,10 @@ struct _Gpumond_Monitor_Device_Data
 	struct { UInt64 ref, violation; }	throttle_duration_thermal;
 	*/
 
+	SInt32					retired_pages_sbe;
+	SInt32					retired_pages_dbe;
+	SInt32					retirement_is_pending;
+
 	SInt32					nprocs;
 	struct _Gpumond_Processinfo		procs[GPUMOND_MAX_PROCS_PER_DEVICE];
 };
