@@ -16,10 +16,15 @@
 		}								\
 	} while(0)								\
 
+static nvmlMemoryLocation_t _other_mem_locations[] = { NVML_MEMORY_LOCATION_L1_CACHE,
+                                                       NVML_MEMORY_LOCATION_L2_CACHE,
+                                                       NVML_MEMORY_LOCATION_REGISTER_FILE,
+                                                       NVML_MEMORY_LOCATION_TEXTURE_MEMORY };
+
 static SInt32 _Collect(struct _Gpumond_Monitor_Device_Data *self,
                        struct Gpumond_Logging *logging)
 {
-	SInt32 err;
+	SInt32 err, i;
 	unsigned int ui32;
 	unsigned long long ull;
 	nvmlMemory_t mem;
@@ -120,6 +125,62 @@ static SInt32 _Collect(struct _Gpumond_Monitor_Device_Data *self,
 
 	NVML_CALL(Nvml_DeviceGetRetiredPagesPendingStatus, self->handle, &enabled);
 	self->retirement_is_pending = enabled;
+
+	NVML_CALL(Nvml_DeviceGetMemoryErrorCounter, self->handle,
+			NVML_MEMORY_ERROR_TYPE_CORRECTED,
+			NVML_VOLATILE_ECC,
+			NVML_MEMORY_LOCATION_DEVICE_MEMORY, &ull);
+	self->ecc_err_count_volatile_device_mem_sbe = ull;
+
+	NVML_CALL(Nvml_DeviceGetMemoryErrorCounter, self->handle,
+			NVML_MEMORY_ERROR_TYPE_UNCORRECTED,
+			NVML_VOLATILE_ECC,
+			NVML_MEMORY_LOCATION_DEVICE_MEMORY, &ull);
+	self->ecc_err_count_volatile_device_mem_dbe = ull;
+
+	self->ecc_err_count_volatile_other_sbe = 0;
+	self->ecc_err_count_volatile_other_dbe = 0;
+	for (i = 0; i < sizeof (_other_mem_locations)/sizeof (_other_mem_locations[0]); ++i) {
+		NVML_CALL(Nvml_DeviceGetMemoryErrorCounter, self->handle,
+				NVML_MEMORY_ERROR_TYPE_CORRECTED,
+				NVML_VOLATILE_ECC,
+				_other_mem_locations[i], &ull);
+		self->ecc_err_count_volatile_other_sbe += ull;
+
+		NVML_CALL(Nvml_DeviceGetMemoryErrorCounter, self->handle,
+				NVML_MEMORY_ERROR_TYPE_UNCORRECTED,
+				NVML_VOLATILE_ECC,
+				_other_mem_locations[i], &ull);
+		self->ecc_err_count_volatile_other_dbe += ull;
+	}
+
+	NVML_CALL(Nvml_DeviceGetMemoryErrorCounter, self->handle,
+			NVML_MEMORY_ERROR_TYPE_CORRECTED,
+			NVML_AGGREGATE_ECC,
+			NVML_MEMORY_LOCATION_DEVICE_MEMORY, &ull);
+	self->ecc_err_count_aggregate_device_mem_sbe = ull;
+
+	NVML_CALL(Nvml_DeviceGetMemoryErrorCounter, self->handle,
+			NVML_MEMORY_ERROR_TYPE_UNCORRECTED,
+			NVML_AGGREGATE_ECC,
+			NVML_MEMORY_LOCATION_DEVICE_MEMORY, &ull);
+	self->ecc_err_count_aggregate_device_mem_dbe = ull;
+
+	self->ecc_err_count_aggregate_other_sbe = 0;
+	self->ecc_err_count_aggregate_other_dbe = 0;
+	for (i = 0; i < sizeof (_other_mem_locations)/sizeof (_other_mem_locations[0]); ++i) {
+		NVML_CALL(Nvml_DeviceGetMemoryErrorCounter, self->handle,
+				NVML_MEMORY_ERROR_TYPE_CORRECTED,
+				NVML_AGGREGATE_ECC,
+				_other_mem_locations[i], &ull);
+		self->ecc_err_count_aggregate_other_sbe += ull;
+
+		NVML_CALL(Nvml_DeviceGetMemoryErrorCounter, self->handle,
+				NVML_MEMORY_ERROR_TYPE_UNCORRECTED,
+				NVML_AGGREGATE_ECC,
+				_other_mem_locations[i], &ull);
+		self->ecc_err_count_aggregate_other_dbe += ull;
+	}
 
 	return 0;
 }
@@ -265,6 +326,15 @@ SInt64 _Serialize_Json(struct Gpumond_Monitor_Data *self, char *buf, SInt64 len)
 		KV(self->devices[i], retired_pages_sbe); COMMA;
 		KV(self->devices[i], retired_pages_dbe); COMMA;
 		KV(self->devices[i], retirement_is_pending); COMMA;
+
+		KV(self->devices[i], ecc_err_count_volatile_device_mem_sbe); COMMA;
+		KV(self->devices[i], ecc_err_count_volatile_device_mem_dbe); COMMA;
+		KV(self->devices[i], ecc_err_count_volatile_other_sbe); COMMA;
+		KV(self->devices[i], ecc_err_count_volatile_other_dbe); COMMA;
+		KV(self->devices[i], ecc_err_count_aggregate_device_mem_sbe); COMMA;
+		KV(self->devices[i], ecc_err_count_aggregate_device_mem_dbe); COMMA;
+		KV(self->devices[i], ecc_err_count_aggregate_other_sbe); COMMA;
+		KV(self->devices[i], ecc_err_count_aggregate_other_dbe); COMMA;
 
 		PUSHS("\"procs\":");
 		PUSHC('[');

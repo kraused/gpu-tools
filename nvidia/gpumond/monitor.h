@@ -57,6 +57,16 @@ struct _Gpumond_Monitor_Device_Data
 	SInt32					retired_pages_dbe;
 	SInt32					retirement_is_pending;
 
+	UInt64					ecc_err_count_volatile_device_mem_sbe;
+	UInt64					ecc_err_count_volatile_device_mem_dbe;
+	/* L1 and L2 cache, register file and texture */
+	UInt64					ecc_err_count_volatile_other_sbe;
+	UInt64					ecc_err_count_volatile_other_dbe;
+	UInt64					ecc_err_count_aggregate_device_mem_sbe;
+	UInt64					ecc_err_count_aggregate_device_mem_dbe;
+	UInt64					ecc_err_count_aggregate_other_sbe;
+	UInt64					ecc_err_count_aggregate_other_dbe;
+
 	SInt32					nprocs;
 	struct _Gpumond_Processinfo		procs[GPUMOND_MAX_PROCS_PER_DEVICE];
 };
