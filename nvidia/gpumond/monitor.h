@@ -73,6 +73,7 @@ struct _Gpumond_Monitor_Device_Data
 
 struct Gpumond_Monitor_Data
 {
+	struct { SInt64 sec, usec; }		timestamp;
 	SInt32					ndevices;
 	struct _Gpumond_Monitor_Device_Data	devices[GPUMOND_MAX_DEVICES];
 };

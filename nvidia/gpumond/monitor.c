@@ -2,6 +2,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <errno.h>
+#include <sys/time.h>
 
 #include "monitor.h"
 #include "logging.h"
@@ -239,6 +241,16 @@ SInt32 Gpumond_Monitor_Collect(struct Gpumond_Monitor_Data *self,
 {
 	SInt32 err;
 	SInt32 i;
+	struct timeval tv;
+	struct timezone tz;
+
+	err = gettimeofday(&tv, &tz);
+	if (UNLIKELY(err)) {
+		GPUMOND_LOGGING_ERROR(logging, "gettimeofday() failed with errno %d: %s", errno, strerror(errno));
+	}
+
+	self->timestamp.sec  = tv.tv_sec;
+	self->timestamp.usec = tv.tv_usec;
 
 	for (i = 0; i < self->ndevices; ++i) {
 		err = _Collect(&self->devices[i], logging);
@@ -289,11 +301,11 @@ SInt64 _Serialize_Json(struct Gpumond_Monitor_Data *self, char *buf, SInt64 len)
 				}							\
 			} while(0)
 
-#undef  KV
-#define KV(S, X)	do {								\
+
+#undef	PUSHF
+#define PUSHF(FMT, ...)	do {								\
 				_m = len - n;						\
-				_k = snprintf(buf + n, len - n,				\
-					"\"" #X "\":%ld", (SInt64 )S.X);		\
+				_k = snprintf(buf + n, len - n,	FMT, __VA_ARGS__);	\
 				if (UNLIKELY(_k < 0)) {					\
 					return -1;					\
 				}							\
@@ -303,7 +315,12 @@ SInt64 _Serialize_Json(struct Gpumond_Monitor_Data *self, char *buf, SInt64 len)
 				n += _k;						\
 			} while(0)
 
+
+#undef	KV
+#define	KV(S, X)	PUSHF("\"" #X "\":%ld", (SInt64 )S.X)
+
 	PUSHC('{');
+	PUSHF("\"timestamp\":[%ld,%ld],", (SInt64 )self->timestamp.sec, (SInt64 )self->timestamp.usec);
 	PUSHS("\"devices\":");
 	PUSHC('[');
 	for (i = 0; i < self->ndevices; ++i) {
