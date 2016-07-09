@@ -1,5 +1,5 @@
 
-VERSION    = 1
+VERSION    = 2
 PATCHLEVEL = 0
 
 CC       = gcc
