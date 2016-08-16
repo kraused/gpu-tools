@@ -1,6 +1,6 @@
 
 CC       = gcc
-CPPFLAGS = -I. -D_GNU_SOURCE -DDEBUG=1
+CPPFLAGS = -I. -D_GNU_SOURCE -DNDEBUG=1
 CCFLAGS  = -O0 -ggdb
 LD       = gcc
 LDFLAGS  = -O0 -ggdb -L/usr/src/gdk/nvml/lib
@@ -10,7 +10,7 @@ Q = @
 
 default: all
 
-all: nvutil001.exe nvutil002.exe nvutil003.exe nvutil004.exe nvutil005.exe nvutil006.exe nvutil007.exe
+all: nvutil001.exe nvutil002.exe nvutil003.exe nvutil004.exe nvutil005.exe nvutil006.exe nvutil007.exe nvutil008.exe nvutil009.exe
 
 nvutil%.exe: nvutil%.o common.o
 	$(Q)$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
