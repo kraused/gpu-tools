@@ -20,6 +20,18 @@ nvutil%.exe: nvutil%.o common.o
 	$(Q)$(CC) $(CPPFLAGS) $(CCFLAGS) -o $@ -c $<
 	@echo "CC $@"
 
+install:
+	install -m0755 -d $(PREFIX)/usr/bin/
+	install -m0755 nvutil001.exe	$(PREFIX)/usr/bin/
+	install -m0755 nvutil002.exe	$(PREFIX)/usr/bin/
+	install -m0755 nvutil003.exe	$(PREFIX)/usr/bin/
+	install -m0755 nvutil004.exe	$(PREFIX)/usr/bin/
+	install -m0755 nvutil005.exe	$(PREFIX)/usr/bin/
+	install -m0755 nvutil006.exe	$(PREFIX)/usr/bin/
+	install -m0755 nvutil007.exe	$(PREFIX)/usr/bin/
+	install -m0755 nvutil008.exe	$(PREFIX)/usr/bin/
+	install -m0755 nvutil009.exe	$(PREFIX)/usr/bin/
+
 clean:
 	-rm -f *.o *.exe
 
