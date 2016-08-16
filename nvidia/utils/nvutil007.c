@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 	unsigned int count;
 	unsigned int i;
 	nvmlDevice_t device;
-	unsigned long long count;
+	unsigned long long llcount;
 	int j, k;
 
 #ifndef NDEBUG
@@ -48,8 +48,8 @@ int main(int argc, char **argv)
 
 		for (j = 0; errors[j].s; ++j) {
 			for (k = 0; locations[k].s; ++k) {
-				Nvml_DeviceGetMemoryErrorCounter(device, errors[j].i, NVML_VOLATILE_ECC, locations[k].i, &count);
-				fprintf(stdout, "device %d current (volatile) %s count at %s: %lld\n", i, errors[j].s, locations[k].s, count);
+				Nvml_DeviceGetMemoryErrorCounter(device, errors[j].i, NVML_VOLATILE_ECC, locations[k].i, &llcount);
+				fprintf(stdout, "device %d current (volatile) %s count at %s: %lld\n", i, errors[j].s, locations[k].s, llcount);
 			}
 		}
 	}
