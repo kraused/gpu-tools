@@ -335,7 +335,7 @@ void kvs_get_SInt64(const char *key, SInt64 *value)
 
 	ret = minipmi_kvs_get(&Ctx.pmiCtx, k, v, 64, &len);
 	if (UNLIKELY(ret)) {
-		error("minipmi_kvs_put() failed");
+		error("minipmi_kvs_get() failed");
 	}
 
 	*value = strtol(v, NULL, 0);
