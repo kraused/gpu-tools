@@ -1,13 +1,12 @@
 [Unit]
 Description=gpumond service
 After=local-fs.target
-After=gpfs-mount-local.service
-Requires=gpfs-mount-local.service
 Wants=syslog.target
 
 [Service]
 Type=simple
-ExecStart=/usr/sbin/watchman.exe /usr/libexec/gpumond/gpumond-watchman.so /gpfs/direct /gpfs/direct/monitoring/gpumond/%H.gpumond.log
+Environment=FILESYSTEM=/tmp DIRECTORY=/tmp/monitoring/gpumond
+ExecStart=/usr/sbin/watchman.exe /usr/libexec/gpumond/gpumond-watchman.so $FILESYSTEM $DIRECTORY/%H.gpumond.log
 
 [Install]
 WantedBy=multi-user.target
