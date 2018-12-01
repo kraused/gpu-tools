@@ -326,7 +326,6 @@ SInt64 _Serialize_Json(struct Gpumond_Monitor_Data *self, char *buf, SInt64 len)
 	for (i = 0; i < self->ndevices; ++i) {
 		PUSHC('{');
 		KV(self->devices[i], streaming_mp_clock); COMMA;
-		KV(self->devices[i], streaming_mp_clock); COMMA;
 		KV(self->devices[i], memory_clock); COMMA;
 		KV(self->devices[i], pcie_link_gen); COMMA;
 		KV(self->devices[i], pcie_link_width); COMMA;
