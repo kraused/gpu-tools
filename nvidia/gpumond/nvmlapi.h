@@ -43,6 +43,7 @@ SInt32 Nvml_DeviceGetApplicationsClock(nvmlDevice_t, nvmlClockType_t, unsigned i
 SInt32 Nvml_DeviceGetAutoBoostedClocksEnabled(nvmlDevice_t, nvmlEnableState_t*, nvmlEnableState_t*);
 SInt32 Nvml_DeviceGetBAR1MemoryInfo(nvmlDevice_t, nvmlBAR1Memory_t*);
 SInt32 Nvml_DeviceGetBoardId(nvmlDevice_t, unsigned int*);
+SInt32 Nvml_DeviceGetBoardPartNumber(nvmlDevice_t, char*, unsigned int);
 SInt32 Nvml_DeviceGetBrand(nvmlDevice_t, nvmlBrandType_t*);
 SInt32 Nvml_DeviceGetBridgeChipInfo(nvmlDevice_t, nvmlBridgeChipHierarchy_t*);
 SInt32 Nvml_DeviceGetClockInfo(nvmlDevice_t, nvmlClockType_t, unsigned int*);

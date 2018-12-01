@@ -31,8 +31,9 @@ def createProcessAndWait(argv):
 def retrieveAPI(url):
 	API = []
 
-	x, o, e = createProcessAndWait(["/usr/bin/curl", "-s", url])
-	
+	cmd     = ["/usr/bin/curl", "-s", url]
+	x, o, e = createProcessAndWait(cmd)
+
 	lines = [u for u in map(lambda z: z.strip(), o.split("\n")) if u]
 	lines = filter(lambda z: re.match(r'.*member_type.*', z), lines)
 	
@@ -79,7 +80,7 @@ pages = ["nvmlDeviceStructs", "nvmlDeviceEnumvs", "nvmlUnitStructs", "nvmlAccoun
 
 API = []
 
-for url in ["http://docs.nvidia.com/deploy/nvml-api/group__%s.html" % p for p in pages]:
+for url in ["https://docs.nvidia.com/deploy/nvml-api/group__%s.html" % p for p in pages]:
 	API += retrieveAPI(url)
 
 prototypes  = [functionPrototype (func, args)  for func, args in API]

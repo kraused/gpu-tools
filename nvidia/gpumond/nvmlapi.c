@@ -221,6 +221,13 @@ SInt32 Nvml_DeviceGetBoardId(nvmlDevice_t a0, unsigned int* a1)
 	return _Nvml_Return_Handler("Nvml_DeviceGetBoardId", "nvmlDeviceGetBoardId", err, nvmlErrorString(err));
 }
 
+SInt32 Nvml_DeviceGetBoardPartNumber(nvmlDevice_t a0, char* a1, unsigned int a2)
+{
+	nvmlReturn_t err;
+	err = nvmlDeviceGetBoardPartNumber(a0, a1, a2);
+	return _Nvml_Return_Handler("Nvml_DeviceGetBoardPartNumber", "nvmlDeviceGetBoardPartNumber", err, nvmlErrorString(err));
+}
+
 SInt32 Nvml_DeviceGetBrand(nvmlDevice_t a0, nvmlBrandType_t* a1)
 {
 	nvmlReturn_t err;
