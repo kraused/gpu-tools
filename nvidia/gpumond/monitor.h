@@ -17,19 +17,55 @@ struct _Gpumond_Processinfo
 	UInt64					memory_b;
 };
 
+enum _Gpumond_Device_Data_Fields
+{
+	_GPUMOND_DEVICE_DATA_FIELDS_name = 0,
+	_GPUMOND_DEVICE_DATA_FIELDS_streaming_mp_clock,
+	_GPUMOND_DEVICE_DATA_FIELDS_memory_clock,
+	_GPUMOND_DEVICE_DATA_FIELDS_pcie_link_gen,
+	_GPUMOND_DEVICE_DATA_FIELDS_pcie_link_width,
+	_GPUMOND_DEVICE_DATA_FIELDS_pcie_throughput_tx_kbps,
+	_GPUMOND_DEVICE_DATA_FIELDS_pcie_throughput_rx_kbps,
+	_GPUMOND_DEVICE_DATA_FIELDS_clocks_throttle_reason,
+	_GPUMOND_DEVICE_DATA_FIELDS_mem,
+	_GPUMOND_DEVICE_DATA_FIELDS_performance_state,
+	_GPUMOND_DEVICE_DATA_FIELDS_fan_speed,
+	_GPUMOND_DEVICE_DATA_FIELDS_power_usage,
+	_GPUMOND_DEVICE_DATA_FIELDS_temperature,
+	_GPUMOND_DEVICE_DATA_FIELDS_utilization,
+	_GPUMOND_DEVICE_DATA_FIELDS_throttle_duration_power,
+	_GPUMOND_DEVICE_DATA_FIELDS_throttle_duration_thermal,
+	_GPUMOND_DEVICE_DATA_FIELDS_retired_pages_sbe,
+	_GPUMOND_DEVICE_DATA_FIELDS_retired_pages_dbe,
+	_GPUMOND_DEVICE_DATA_FIELDS_retirement_is_pending,
+	_GPUMOND_DEVICE_DATA_FIELDS_ecc_err_count_volatile_device_mem_sbe,
+	_GPUMOND_DEVICE_DATA_FIELDS_ecc_err_count_volatile_device_mem_dbe,
+	_GPUMOND_DEVICE_DATA_FIELDS_ecc_err_count_volatile_other_sbe,
+	_GPUMOND_DEVICE_DATA_FIELDS_ecc_err_count_volatile_other_dbe,
+	_GPUMOND_DEVICE_DATA_FIELDS_ecc_err_count_aggregate_device_mem_sbe,
+	_GPUMOND_DEVICE_DATA_FIELDS_ecc_err_count_aggregate_device_mem_dbe,
+	_GPUMOND_DEVICE_DATA_FIELDS_ecc_err_count_aggregate_other_sbe,
+	_GPUMOND_DEVICE_DATA_FIELDS_ecc_err_count_aggregate_other_dbe,
+	_GPUMOND_DEVICE_DATA_FIELDS_procs,
+	_GPUMOND_DEVICE_DATA_FIELDS_SIZE
+};
+
 struct _Gpumond_Monitor_Device_Data
 {
+	SInt32					index;
 	nvmlDevice_t				handle;
+
+	_Bool					supported[_GPUMOND_DEVICE_DATA_FIELDS_SIZE];
+
+	char					name[64];
 
 	SInt64					streaming_mp_clock;
 	SInt64					memory_clock;
 
 	SInt32					pcie_link_gen;
 	SInt32					pcie_link_width;
-	/* Not support on K80.
 	SInt32					pcie_throughput_tx_kbps;
 	SInt32					pcie_throughput_rx_kbps;
-	*/
 
 	UInt64					clocks_throttle_reason;
 
@@ -39,19 +75,15 @@ struct _Gpumond_Monitor_Device_Data
 
 	SInt32					performance_state;
 
-	/* Not supported on K80.
 	SInt32					fan_speed;
-	*/
 	SInt32					power_usage;
 	SInt32					temperature;
 
 	SInt32					gpu_utilization_rate;
 	SInt32					mem_utilization_rate;
 
-	/* Not supported on K80.
 	struct { UInt64 ref, violation; }	throttle_duration_power;
 	struct { UInt64 ref, violation; }	throttle_duration_thermal;
-	*/
 
 	SInt32					retired_pages_sbe;
 	SInt32					retired_pages_dbe;
