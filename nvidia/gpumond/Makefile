@@ -3,11 +3,11 @@ VERSION    = 2
 PATCHLEVEL = 0
 
 CC       = gcc
-CPPFLAGS = -I. -D_GNU_SOURCE
+CPPFLAGS = -D_GNU_SOURCE -I. -I$(shell pkg-config --cflags nvml-10.0)
 CCFLAGS  = -Wall -O0 -ggdb -std=gnu11
 LD       = gcc
-LDFLAGS  = -O0 -ggdb -L/usr/src/gdk/nvml/lib
-LIBS     = -lnvidia-ml
+LDFLAGS  = -O0 -ggdb
+LIBS     = $(shell pkg-config --libs nvml-10.0)
 
 Q = @
 
@@ -15,11 +15,11 @@ default: all
 
 all: gpumond.exe
 
-gpumond.exe: main.o gpumond.o alloc.o logging.o output.o monitor.o helper.o nvmlapi.c
+gpumond.exe: main.o gpumond.o alloc.o logging.o output.o monitor.o helper.o nvmlapi.o
 	$(Q)$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
 	@echo "LD $@"
 
-%.o: %.c
+%.o: %.c %.h
 	$(Q)$(CC) $(CPPFLAGS) $(CCFLAGS) -o $@ -c $<
 	@echo "CC $@"
 

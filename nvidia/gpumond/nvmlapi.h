@@ -2,7 +2,7 @@
 #ifndef GPUMOND_NVMLAPI_H_INCLUDED
 #define GPUMOND_NVMLAPI_H_INCLUDED 1
 
-#include <nvidia/gdk/nvml.h>
+#include <nvml.h>
 
 #include "config.h"
 #include "platform.h"
