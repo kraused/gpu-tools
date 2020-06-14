@@ -4,8 +4,8 @@ After=local-fs.target
 
 [Service]
 Type=simple
-Environment=FILESYSTEM=/tmp DIRECTORY=/tmp/monitoring/gpumond
-ExecStart=/usr/sbin/watchman.exe /usr/libexec/gpumond/gpumond-watchman.so ${FILESYSTEM} ${DIRECTORY}/%H.gpumond.log
+EnvironmentFile=/etc/sysconfig/gpumond
+ExecStart=/usr/sbin/watchman.exe /usr/libexec/gpumond/gpumond-watchman.so ${USER} ${FILESYSTEM} ${DIRECTORY}/%H.gpumond.log ${ROTATE_SIZE_THRESHOLD}
 
 [Install]
 WantedBy=multi-user.target

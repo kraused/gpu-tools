@@ -1,0 +1,4 @@
+USER                  = gpumond
+FILESYSTEM            = /tmp 
+DIRECTORY             = /tmp/monitoring/gpumond
+ROTATE_SIZE_THRESHOLD = 16777216
