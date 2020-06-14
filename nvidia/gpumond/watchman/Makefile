@@ -1,5 +1,5 @@
 
-CXX      = g++
+CXX      = g++ -std=c++11
 CPPFLAGS = -I. -D_GNU_SOURCE -D'GPUMOND_BIN_PREFIX="/usr/sbin"'
 CXXFLAGS = -fno-exceptions -fno-rtti -fPIC -Wall -O0 -ggdb
 LD       = g++
